@@ -7,8 +7,6 @@ A = [[random.random() for row in range(n)] for col in range(n)]
 B = [[random.random() for row in range(n)] for col in range(n)]
 C = [[0 for row in range(n)] for col in range(n)]
 
-print("Начинаю умножение матриц...")
-
 start = time()
 for i in range(n):
     for j in range(n):
@@ -16,6 +14,4 @@ for i in range(n):
             C[i][j] += A[i][k] * B[k][j]
 end = time()
 
-print("Умножение завершено.")
-print("Время выполнения: %0.6f секунд" % (end - start))
-
+print('%0.6f' % (end - start))
