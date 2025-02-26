@@ -1,0 +1,35 @@
+.data
+newline: .byte 10
+
+.text
+.globl main
+main:
+li a7, 5
+ecall
+mv t0, a0
+li t1, 0
+bltz t0, negate
+j process
+
+negate:
+neg t0, t0
+
+process:
+li t2, 10
+
+loop:
+beqz t0, print
+rem t3, t0, t2
+add t1, t1, t3
+div t0, t0, t2
+j loop
+
+print:
+mv a0, t1
+li a7, 1
+ecall
+lb a0, newline
+li a7, 11
+ecall
+li a7, 10
+ecall
