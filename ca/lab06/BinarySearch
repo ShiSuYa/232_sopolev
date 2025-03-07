@@ -1,0 +1,23 @@
+binary_search:
+	blt	a3,a2,not_found
+	sub	t0,a3,a2
+	srai	t0,t0,1
+	add	t0,a2,t0
+	slli	t1,t0,2
+	add	t1,a0,t1
+	lw	t1,0(t1)
+	beq	t1,a1,found
+	blt	t1,a1,right_search
+	j	left_search
+found:
+	mv	a0,t0
+	jr	ra
+right_search:
+	addi	a2,t0,1
+	j	binary_search
+left_search:
+	addi	a3,t0,-1
+	j	binary_search
+not_found:
+	li	a0,-1
+	jr	ra
