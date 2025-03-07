@@ -1,0 +1,102 @@
+    .data
+array:  .space 4000
+
+    .text
+    .globl main
+main:
+    li a7,5
+    ecall
+    mv s0,a0
+    li a7,5
+    ecall
+    mv s1,a0
+    la s2,array
+    li t0,0
+read_loop:
+    bge t0,s0,sort_start
+    li a7,5
+    ecall
+    slli t1,t0,2
+    add t2,s2,t1
+    sw a0,0(t2)
+    addi t0,t0,1
+    j read_loop
+sort_start:
+    mv a0,s0
+    mv a1,s2
+    beqz s1,use_cmp_normal
+    la a2,cmp_mod
+    j call_sort
+use_cmp_normal:
+    la a2,cmp_normal
+call_sort:
+    jal ra,KeySort
+    mv t0,a0
+    mv t1,s2
+print_loop:
+    beqz t0,finish
+    lw a0,0(t1)
+    li a7,1
+    ecall
+    li a0,10
+    li a7,11
+    ecall
+    addi t1,t1,4
+    addi t0,t0,-1
+    j print_loop
+finish:
+    li a7,10
+    ecall
+
+KeySort:
+    mv t2,a0
+    li t0,0
+outer_loop:
+    addi t3,t2,-1
+    sub t3,t3,t0
+    blez t3,outer_next
+    li t1,0
+inner_loop:
+    bge t1,t3,outer_next
+    slli t4,t1,2
+    add t4,a1,t4
+    lw t5,0(t4)
+    lw t6,4(t4)
+    addi a0,t5,0
+    addi a1,t6,0
+    jalr ra,a2,0
+    beqz a0,do_swap
+no_swap:
+    addi t1,t1,1
+    j inner_loop
+do_swap:
+    sw t6,0(t4)
+    sw t5,4(t4)
+    addi t1,t1,1
+    j inner_loop
+outer_next:
+    addi t0,t0,1
+    blt t0,t2,outer_loop
+    mv a0,t2
+    ret
+
+cmp_normal:
+    slt t0,a1,a0
+    bnez t0,cn_false
+    li a0,1
+    ret
+cn_false:
+    li a0,0
+    ret
+
+cmp_mod:
+    li t0,10
+    rem t1,a0,t0
+    rem t2,a1,t0
+    slt t3,t1,t2
+    bnez t3,cm_false
+    li a0,1
+    ret
+cm_false:
+    li a0,0
+    ret
