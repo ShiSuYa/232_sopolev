@@ -1,0 +1,63 @@
+	.text
+	.globl main
+main:
+	li a7,5
+	ecall
+	addi t0,a0,0
+	li a7,5
+	ecall
+	addi t1,a0,0
+	li a7,5
+	ecall
+	addi t2,a0,0
+	addi a0,t0,0
+	addi a1,t1,0
+	addi a2,t2,0
+	jal ra,checkTriangle
+	beq a0,zero,exit_loop
+	li t3,1
+	beq a0,t3,print_Y
+	li a7,11
+	li a0,78
+	ecall
+	j print_newline
+print_Y:
+	li a7,11
+	li a0,89
+	ecall
+print_newline:
+	li a7,11
+	li a0,10
+	ecall
+	j main
+exit_loop:
+	li a7,10
+	ecall
+
+checkTriangle:
+	beq a0,zero,chk_a0
+	j not_all_zero
+chk_a0:
+	beq a1,zero,chk_a1
+	j not_all_zero
+chk_a1:
+	beq a2,zero,all_zero
+	j not_all_zero
+all_zero:
+	li a0,0
+	jr ra
+not_all_zero:
+	add t4,a1,a2
+	slt t5,t4,a0
+	bne t5,zero,ret2
+	add t4,a0,a2
+	slt t5,t4,a1
+	bne t5,zero,ret2
+	add t4,a0,a1
+	slt t5,t4,a2
+	bne t5,zero,ret2
+	li a0,1
+	jr ra
+ret2:
+	li a0,2
+	jr ra
