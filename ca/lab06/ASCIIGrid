@@ -1,0 +1,62 @@
+    .macro PRINTLINE %reg, %c1, %c2
+        mv t3, %reg
+        li a0, %c1
+        li a7, 11
+        ecall
+.print_loop:
+        beqz t3, .print_end
+        li a0, %c2
+        li a7, 11
+        ecall
+        li a0, %c1
+        li a7, 11
+        ecall
+        addi t3, t3, -1
+        j .print_loop
+.print_end:
+        li a0, 10
+        li a7, 11
+        ecall
+    .end_macro
+
+    .macro PRINTLINE_NO_NL %reg, %c1, %c2
+        mv t3, %reg
+        li a0, %c1
+        li a7, 11
+        ecall
+.print_loop_no_nl:
+        beqz t3, .print_end_no_nl
+        li a0, %c2
+        li a7, 11
+        ecall
+        li a0, %c1
+        li a7, 11
+        ecall
+        addi t3, t3, -1
+        j .print_loop_no_nl
+.print_end_no_nl:
+    .end_macro
+
+    .text
+    .globl main
+main:
+    li a7, 5
+    ecall
+    mv t0, a0
+    li a7, 5
+    ecall
+    mv t1, a0
+
+    PRINTLINE t0, 43, 45
+    mv t2, t1
+grid_loop:
+    blez t2, last_horiz
+    PRINTLINE t0, 124, 32
+    addi t2, t2, -1
+    blez t2, last_horiz
+    PRINTLINE t0, 43, 45
+    j grid_loop
+last_horiz:
+    PRINTLINE_NO_NL t0, 43, 45
+    li a7, 10
+    ecall
