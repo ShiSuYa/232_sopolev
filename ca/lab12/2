@@ -1,0 +1,44 @@
+.macro exit
+    li      a7, 10
+    ecall
+.end_macro
+
+.macro print_str(%str)
+    la      a0, %str
+    li      a7, 4
+    ecall
+.end_macro
+
+.macro read_int(%x)
+    li      a7, 5
+    ecall
+    mv      %x, a0
+.end_macro
+
+.macro newline
+    li      a0, '\n'
+    li      a7, 11
+    ecall
+.end_macro
+
+    .data
+found_msg: .asciz "FOUND\n"
+stopped_msg: .asciz "STOPPED\n"
+
+    .text
+main:
+    read_int(s4)
+    lui     s0, 0xffff0
+loop:
+    li      t0, 0
+    sb      t0, 0x12(s0)
+    lw      s1, 0x14(s0)
+    beqz    s1, stopped
+    beq     s1, s4, found
+    j       loop
+found:
+    print_str(found_msg)
+    exit
+stopped:
+    print_str(stopped_msg)
+    exit
