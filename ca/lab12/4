@@ -1,0 +1,55 @@
+.macro exit
+    li      a7, 10
+    ecall
+.end_macro
+
+.macro read_int(%x)
+    li      a7, 5
+    ecall
+    mv      %x, a0
+.end_macro
+
+.macro write_mem(%addr, %val)
+    sw      %val, 0(%addr)
+.end_macro
+
+    .data
+colors: .word 16711680, 65280, 255, 16776960, 16711935, 65535, 16777215, 8947848
+    .text
+main:
+    li      s0, 0x10010000
+    li      s1, 128
+    li      s2, 64
+    li      s3, 64
+
+    li      t0, 0
+outer_loop:
+    bge     t0, s1, end
+    li      t1, 0
+inner_loop:
+    bge     t1, s1, next_row
+    srl     t2, t0, 6
+    srl     t3, t1, 6
+    xor     t4, t0, t1
+    add     t5, t0, t1
+    srli    t6, s1, 1
+    slt     t6, t5, t6
+    xor     t4, t4, t6
+    sll     t2, t2, 0
+    sll     t3, t3, 1
+    sll     t4, t4, 2
+    add     t2, t2, t3
+    add     t2, t2, t4
+    slli    t2, t2, 2
+    la      t3, colors
+    add     t3, t3, t2
+    lw      t3, 0(t3)
+    write_mem(s0, t3)
+    addi    s0, s0, 4
+    addi    t1, t1, 1
+    j       inner_loop
+next_row:
+    addi    t0, t0, 1
+    j       outer_loop
+end:
+    exit
